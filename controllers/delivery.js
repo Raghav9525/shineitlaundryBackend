@@ -210,14 +210,20 @@ const update_payment_status = async (req, res) => {
 
 const delivery_done = async (req, res) => {
   const { mobile, db_mobile, pay_method, bill, payable_amount } = req.body.cloth_details;
-
-  const sql = 'INSERT INTO delivery (cust_mobile, db_mobile, payment_mode, bill, paid_amount, payment_verify, time) VALUES (?, ?, ?, ?, ?, "0", NOW())';
+  const currentDate = new Date().toLocaleDateString('en-GB').split('/').reverse().join('-');
+console.log(currentDate)
+const sql = 'INSERT INTO delivery (cust_mobile, db_mobile, payment_mode, bill, paid_amount, payment_verify, delivery_date) VALUES (?, ?, ?, ?, ?, ?, ?)';
 
   try {
     pool.getConnection((err, connection) => {
-      connection.query(sql, [mobile, db_mobile, pay_method, bill, payable_amount], async (err, result) => { // Making the callback function async
+      connection.query(sql, [mobile, db_mobile, pay_method, bill, payable_amount,0, currentDate], async (err, result) => { 
+        if(err){
+          console.log(err)
+          connection.release()
+          return
+        }
         const lastId = result.insertId;
-
+        console.log(lastId)
         const sql1 = "INSERT INTO delivery_account (delivery_id, cust_mobile, db_mobile, remaining_bill) VALUES (?, ?, ?, ?)";
 
         connection.query(sql1, [lastId, mobile, db_mobile, bill], async (err, result1) => { // Making the callback function async
