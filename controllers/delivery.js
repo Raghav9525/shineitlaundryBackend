@@ -417,8 +417,67 @@ const customer_pending_payment = (req, res) => {
   })
 }
 
+const delete_database = (req, res) => {
+  const sql1 = "DELETE FROM delivery_account";
+  const sql2 = 'DELETE FROM delivery';
+  const sql3 = 'DELETE FROM cloth_details';
+  const sql4 = 'DELETE FROM orders';
+
+  pool.getConnection((err, connection) => {
+    if (err) {
+      connection.release();
+      console.error("Error getting connection:", err);
+      res.status(500).send("Internal Server Error");
+      return;
+    }
+
+    connection.query(sql1, (error, result1) => {
+      if (error) {
+        connection.release();
+        console.error("Error executing SQL 1:", error);
+        res.status(500).send("Internal Server Error");
+        return;
+      }
+
+      connection.query(sql2, (error, result2) => {
+        if (error) {
+          connection.release();
+          console.error("Error executing SQL 2:", error);
+          res.status(500).send("Internal Server Error");
+          return;
+        }
+
+        connection.query(sql3, (error, result3) => {
+          if (error) {
+            connection.release();
+            console.error("Error executing SQL 3:", error);
+            res.status(500).send("Internal Server Error");
+            return;
+          }
+
+          connection.query(sql4, (error, result4) => {
+            connection.release();
+
+            if (error) {
+              console.error("Error executing SQL 4:", error);
+              res.status(500).send("Internal Server Error");
+              return;
+            }
+
+            console.log("All queries executed successfully.");
+            res.status(200).json({ message: "Database deleted successfully." }); // Send JSON response
+          });
+        });
+      });
+    });
+  });
+};
+
+
+
 
 module.exports = {
+  delete_database,
   welcome,
   // submitform,
   placeorder,
