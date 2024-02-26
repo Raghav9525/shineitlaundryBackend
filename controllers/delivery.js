@@ -16,6 +16,8 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
+
+
 // function for payment verification table
 const unverified_delivery = (req, res) => {
 
@@ -314,6 +316,7 @@ const generateOtp = () => {
 
 
 const placeorder = (req, res) => {
+  console.log("hii")
   const { custMob, clothDetail } = req.body;
   let bill = 0;
   let pantPrice = 10;
@@ -343,6 +346,7 @@ const placeorder = (req, res) => {
       return res.status(500).json({ message: "Error getting database connection" });
     }
 
+    console.log("connection successful")
     // Start transaction
     con.beginTransaction(err => {
       if (err) {
